@@ -1,59 +1,135 @@
-# AppAngularTutrial21
+# NovaCRM — Angular + NestJS + GraphQL + MongoDB
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.2.
+> 🚧 **Status: In Progress** — this project is being built incrementally as
+> part of an ongoing portfolio effort. See the [Roadmap](#roadmap) below for
+> current progress.
 
-## Development server
+A full-stack CRM (Customer Relationship Management) application built to
+demonstrate a modern, production-style MEAN-adjacent stack: **Angular** on
+the frontend, **NestJS** on the backend, **GraphQL** as the API layer, and
+**MongoDB** for persistence — end to end, containerized with Docker.
 
-To start a local development server, run:
+Unlike my [.NET-based projects](https://github.com/KTajerbashi), this one
+is deliberately built on a different stack to show the same architectural
+thinking (modular design, clear separation of concerns, testable services)
+applied outside of .NET.
 
-```bash
-ng serve
+## What this demonstrates
+
+- **NestJS** backend organized in feature modules (Contacts, Companies,
+  Deals, Activities, Auth), each with its own resolver, service, schema,
+  and DTOs — a Clean-Architecture-style separation adapted to Node.js
+- **GraphQL API** (via `@nestjs/graphql` + Apollo) instead of REST —
+  a single flexible endpoint, strongly typed schema, resolvers instead of
+  controllers
+- **MongoDB** with Mongoose schemas, modeling a real relational-ish domain
+  (Contacts ↔ Companies ↔ Deals ↔ Activities) in a document database
+- **JWT authentication** with route/resolver guards and basic role
+  separation (Admin / Sales Rep)
+- **Angular frontend** consuming the GraphQL API via Apollo Angular, with a
+  feature-based folder structure (`core` / `shared` / `features`)
+- Fully containerized with **Docker Compose** — Angular, NestJS, and
+  MongoDB run together with one command
+
+## Domain overview
+
+A CRM for managing a sales pipeline:
+
+- **Contacts** — people associated with deals and companies
+- **Companies** — organizations a contact belongs to
+- **Deals** — sales opportunities moving through a pipeline
+  (`Lead → Qualified → Proposal → Won / Lost`)
+- **Activities** — notes, calls, and meetings logged against a contact or
+  deal
+- **Auth** — user accounts with role-based access (Admin, Sales Rep)
+
+```graphql
+type Contact {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String
+  company: Company
+  deals: [Deal!]
+}
+
+type Deal {
+  id: ID!
+  title: String!
+  value: Float!
+  stage: DealStage!   # LEAD, QUALIFIED, PROPOSAL, WON, LOST
+  contact: Contact!
+  activities: [Activity!]
+}
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Tech Stack
 
-## Code scaffolding
+| Layer | Technology |
+|---|---|
+| Frontend | Angular, Apollo Angular |
+| Backend | NestJS |
+| API | GraphQL (Apollo Server) |
+| Database | MongoDB (Mongoose) |
+| Auth | JWT, Guards |
+| Container | Docker, Docker Compose |
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Project Structure
 
-```bash
-ng generate component component-name
+```
+angular-nestjs-crm/
+├── backend/                        # NestJS
+│   ├── src/
+│   │   ├── modules/
+│   │   │   ├── contacts/
+│   │   │   │   ├── contacts.module.ts
+│   │   │   │   ├── contacts.resolver.ts
+│   │   │   │   ├── contacts.service.ts
+│   │   │   │   ├── schemas/contact.schema.ts
+│   │   │   │   └── dto/
+│   │   │   ├── companies/
+│   │   │   ├── deals/
+│   │   │   ├── activities/
+│   │   │   └── auth/
+│   │   ├── common/                 # guards, filters, interceptors
+│   │   └── main.ts
+│   └── test/
+├── frontend/                       # Angular
+│   └── src/app/
+│       ├── core/                   # auth, interceptors, guards
+│       ├── shared/
+│       └── features/               # contacts, deals, dashboard...
+├── docker-compose.yml
+└── README.md
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Roadmap
 
-```bash
-ng generate --help
-```
+- [ ] Backend: `contacts` module (schema, service, basic CRUD)
+- [ ] Backend: GraphQL resolvers replacing REST-style CRUD
+- [ ] Backend: `companies`, `deals`, `activities` modules
+- [ ] Backend: JWT auth + role guards
+- [ ] Frontend: Angular app shell + Apollo Client setup
+- [ ] Frontend: Contacts & Companies views
+- [ ] Frontend: Deals pipeline (Kanban-style board)
+- [ ] Docker Compose: Angular + NestJS + MongoDB
+- [ ] Tests: unit tests for backend services/resolvers
+- [ ] Deployment: live demo link
 
-## Building
+## Getting Started
 
-To build the project run:
+> Setup instructions will be added once the initial backend module is in
+> place. Planned flow:
+>
+> ```bash
+> docker compose up --build
+> ```
+>
+> This will start MongoDB, the NestJS API (GraphQL Playground at
+> `/graphql`), and the Angular app together.
 
-```bash
-ng build
-```
+## Related projects
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- [CleanArchitecture.AngularHost](https://github.com/KTajerbashi/CleanArchitecture.AngularHost) — .NET + Angular integrated hosting template with .NET Aspire
+- More flagship projects linked from my [profile](https://github.com/KTajerbashi)
