@@ -1,3 +1,0 @@
-interface IUserDeleteCommand extends IBaseCommand {
-    
-}
